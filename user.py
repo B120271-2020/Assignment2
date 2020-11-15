@@ -19,14 +19,15 @@ print ("Welcome to B120271\'s  tool for protein conservation and motif ID analys
 
 
 #receive input for taxonomic group
-prot = input("Please input subset of taxonomic tree of interest:\n")
+tax = input("Please input subset of taxonomic tree of interest:\n")
 
 
 #receive input for protein of interest
-tax = input("Please input protein family of interest:\n")
+prot = input("Please input protein family of interest:\n")
 
 
 #confirm analysis
+print ("\n")
 print("Analysis will be performed on the\n", 
 prot, " protein family\n"
 , "in the \n", 
@@ -37,14 +38,20 @@ print("\n")
 proceed = input("Do you wish to continue? [yes/no] \n")
 
 if proceed == "yes":
-	print ("Continuing analysis...")
+	print ("Fetching Information...")
 else:
 	sys.exit()
 	
 
 #we make a folder to store our sequences and navigate there
-os.mkdir("database")
-os.chdir("database")
+#os.mkdir("database")
+#os.chdir("database")
 
 
 #lets go fetch our sequences now
+subprocess.call('esearch -db protein \
+-query "aves [organism] AND glucose 6 phosphatase [protein]" |\
+ efetch -format fasta > data.txt', shell=True)
+
+
+#output files
