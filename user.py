@@ -50,7 +50,7 @@ else:
 
 #lets go fetch our sequences now
 subprocess.call('esearch -db protein \
--query "aves [organism] AND glucose 6 phosphatase [protein]" |\
+-query "tax [organism] AND prot [protein]" |\
  efetch -format fasta > data.txt', shell=True)
 
 
