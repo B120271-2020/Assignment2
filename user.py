@@ -14,8 +14,7 @@ import os, subprocess, sys, re
 
 
 #Introductory lines
-print ("Welcome to B120271\'s  tool for protein conservation and motif ID analysis",
-"\n")
+print ("\nWelcome to B120271\'s  tool for protein conservation and motif ID analysis\n")
 
 
 #receive input for taxonomic group
@@ -27,13 +26,10 @@ prot = input("Please input protein family of interest:\n")
 
 
 #confirm analysis
-print ("\n")
-print("Analysis will be performed on the\n", 
+print("\nAnalysis will be performed on the\n", 
 prot, " protein family\n"
 , "in the \n", 
-tax, "taxonomic subset")
-
-print("\n")
+tax, "taxonomic subset\n")
 
 proceed = input("Do you wish to continue? [yes/no] \n")
 
@@ -52,13 +48,23 @@ os.chdir("database")
 #we first copy our current environment to retain our variables
 current_env = os.environ.copy()
 
-#here im just gonna add these to our dictionary in case
-current_env ["protein"] = prot
-current_env ["taxonomic"] = tax
+#adding these to our dictionary just in case
+current_env ["wow"] = prot
+current_env ["wowe"] = tax
 
+#we output the fasta information using the esearch commands
 subprocess.call('esearch -db protein \
--query " $taxonomic [organism] AND $protein [protein]" |\
+-query "$wowe [organism] AND $wow [protein]" |\
  efetch -format fasta > data.txt', env=current_env, shell=True)
 
+#update the user on progress
+print("Data successfully downloaded...")
 
-#output files
+#proceed options
+print("Proceeding with conservation analysis...")
+
+#look through output files and get bare data about it to present to the reader
+#like number of sequences, etc
+#if term too narrow, prompted to search for broader parameters
+#could take the user back to the start in a loop or something
+
