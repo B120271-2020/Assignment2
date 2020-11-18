@@ -44,14 +44,21 @@ else:
 	
 
 #we make a folder to store our sequences and navigate there
-#os.mkdir("database")
-#os.chdir("database")
+os.mkdir("database")
+os.chdir("database")
 
 
 #lets go fetch our sequences now
+#we first copy our current environment to retain our variables
+current_env = os.environ.copy()
+
+#here im just gonna add these to our dictionary in case
+current_env ["protein"] = prot
+current_env ["taxonomic"] = tax
+
 subprocess.call('esearch -db protein \
--query "tax [organism] AND prot [protein]" |\
- efetch -format fasta > data.txt', shell=True)
+-query " $taxonomic [organism] AND $protein [protein]" |\
+ efetch -format fasta > data.txt', env=current_env, shell=True)
 
 
 #output files
