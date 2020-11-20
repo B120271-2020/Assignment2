@@ -5,9 +5,8 @@
 #######
 
 
-
 #first lets import the modules needed
-import os, subprocess, sys, re
+import os, subprocess, sys, re, time
 
 
 #we make a folder for our assignment and navigate there
@@ -73,13 +72,13 @@ while i == 1:
 
 
 	#we count the number of sequences as >
-	seq = data.count('>')
-	print("The total number of sequences is:\n", seq)
+	nseq = data.count('>')
+	print("The total number of sequences is:\n", nseq)
 
 
 	#we count the number of non redunant species
-	spec = "peepee poopoo"
-	print("The total number of unique species is:\n", spec)
+	nspec = set(re.findall('\[(.*?)\]', data))
+	print("The total number of unique species is:\n", len(nspec))
 
 	#if this is not acceptable we ask user if they want to restart
 	print("\nWARNING! Program will only analyse top the 250 most similar sequences")
