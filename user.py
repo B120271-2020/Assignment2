@@ -41,7 +41,7 @@ while i == 1:
 	proceed = input("Do you wish to continue? [yes/no] \n")
 
 	if proceed == "yes":
-		print ("Fetching data...")
+		print ("Please be patient, fetching data...")
 	else:
 		sys.exit()
 
@@ -66,6 +66,10 @@ while i == 1:
 	print("Data successfully downloaded")
 
 
+	#if this is not acceptable we ask user if they want to restart
+	print("\nWARNING! Program will only analyse the top 250 most similar sequences")
+	
+
 	#reading through the data to let the user know what they have downloaded
 	data = open("data.txt").read()
 	print("\nWithin your defined dataset,")
@@ -80,10 +84,8 @@ while i == 1:
 	nspec = set(re.findall('\[(.*?)\]', data))
 	print("The total number of unique species is:\n", len(nspec))
 
-	#if this is not acceptable we ask user if they want to restart
-	print("\nWARNING! Program will only analyse top the 250 most similar sequences")
-
-	next = input("Would you like to redefine your query? [yes/no]\n")
+	#option to redefine query
+	next = input("\nWould you like to redefine your query? [yes/no]\n")
 
 	if next == "yes":
 		#restart the loop 
