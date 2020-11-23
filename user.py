@@ -38,61 +38,64 @@ while i == 1:
 	"in the\n",
 	tax, "taxonomic subset\n")
 
-	proceed = input("Do you wish to continue? [yes/no] \n")
+	proceed = input("Do you wish to continue? [yes/no/exit] \n")
 
 	if proceed == "yes":
 		print ("Please be patient, fetching data...")
-	else:
-		sys.exit()
+
+		#lets go fetch our sequences now
+		#we first copy our current environment to retain our variables
+		current_env = os.environ.copy()
 
 
-	#lets go fetch our sequences now
-	#we first copy our current environment to retain our variables
-	current_env = os.environ.copy()
+		#adding these to our dictionary just in case
+		current_env ["sub"] = tax
+		current_env ["pro"] = prot
 
 
-	#adding these to our dictionary just in case
-	current_env ["tax"] = tax
-	current_env ["prot"] = prot
+		#we output the fasta information using the esearch commands
+		subprocess.call('esearch -db protein \
+		-query "$sub [ORGN] AND $pro [PROT]" |\
+		efetch -format fasta > data.txt', env=current_env, shell=True)
 
 
-	#we output the fasta information using the esearch commands
-	subprocess.call('esearch -db protein \
-	-query "$tax [organism] AND $prot [protein]" |\
-	efetch -format fasta > data.txt', env=current_env, shell=True)
+		#update the user on progress
+		print("Data acquired")
 
 
-	#update the user on progress
-	print("Data successfully downloaded")
-
-
-	#if this is not acceptable we ask user if they want to restart
-	print("\nWARNING! Program will only analyse the top 250 most similar sequences")
+		#if this is not acceptable we ask user if they want to restart
+		print("\nWARNING! Program will only analyse the top 250 most similar sequences")
 	
 
-	#reading through the data to let the user know what they have downloaded
-	data = open("data.txt").read()
-	print("\nWithin your defined dataset,")
+		#reading through the data to let the user know what they have downloaded
+		data = open("data.txt").read()
+		print("\nWithin your defined dataset,")
 
 
-	#we count the number of sequences as >
-	nseq = data.count('>')
-	print("The total number of sequences is:\n", nseq)
+		#we count the number of sequences as >
+		nseq = data.count('>')
+		print("The total number of sequences is:\n", nseq)
 
 
-	#we count the number of non redunant species
-	nspec = set(re.findall('\[(.*?)\]', data))
-	print("The total number of unique species represented:\n", len(nspec))
+		#we count the number of non redunant species
+		nspec = set(re.findall('\[(.*?)\]', data))
+		print("The total number of unique species represented:\n", len(nspec))
 
-	#option to redefine query
-	next = input("\nWould you like to redefine your query? [yes/no]\n")
+		#option to redefine query
+		next = input("\nWould you like to redefine your query? [yes/no]\n")
 
-	if next == "yes":
-		#restart the loop 
+		if next == "yes":
+			#restart the loop 
+			i = 1
+		else:
+			#exit the loop
+			i = 2
+	
+	elif proceed == "no":
+		print("Redefining query")
 		i = 1
 	else:
-		#exit the loop
-		i = 2 
+		sys.exit() 
 
 
 #Going to the next step
@@ -190,12 +193,12 @@ for i in seq:
 
 print("File inputs for PROSITE generated")
 
+#give the user time to read
+time.sleep(5)
 
 #now we process each file into patmatmotifs
-#we find all
 cmd = 'for file in *\n do\n patmatmotifs $file out\n cat out >> summary\n done'
 subprocess.call(cmd, shell=True)
-
 
 #now lets look for elements in the summary file
 summary = open("summary").read()
