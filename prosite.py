@@ -37,3 +37,14 @@ for i in seq:
 		n+=1
 
 print("File inputs for PROSITE generated")
+
+
+#we use a loop in unix to go through each file and process through the patmatmotifs
+cmd = 'for file in *\n do\n patmatmotifs $file out\n cat out >> summary\n done'
+subprocess.call(cmd, shell=True )
+
+
+#looking through the summary file we can see
+#how many sequenecs have a motif
+#the different motifs by name
+#the number of sequences associated with each motif
