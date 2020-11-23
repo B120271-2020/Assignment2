@@ -117,7 +117,8 @@ print("To verify you are not a robot, please input the following within the squa
 
 #we wait to make sure user has read the prompt
 #this process of file naming is a bit of a cop-out
-time.sleep(3)
+#but flexible enough that any yes input will provide correct output
+time.sleep(5)
 
 #the user input of yes specifies the file name used in the next command
 subprocess.call(cmd, shell=True)
