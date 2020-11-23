@@ -8,6 +8,9 @@
 #first lets import the modules needed
 import os, subprocess, sys, re, time
 
+#Introductory lines
+print ("\nWelcome to B120271\'s  tool for protein conservation and motif ID analysis\n")
+print("Program will write outputs to the \'database\' folder in the current directory.")
 
 #we make a folder for our assignment and navigate there
 if not os.path.exists("database"):
@@ -15,11 +18,7 @@ if not os.path.exists("database"):
 os.chdir("database")
 
 
-#Introductory lines
-print ("\nWelcome to B120271\'s  tool for protein conservation and motif ID analysis\n")
-
-
-#we establish a loop for user inputs
+#we establish a big loop for user inputs
 
 i=1
 
@@ -54,6 +53,7 @@ while i == 1:
 
 
 		#we output the fasta information using the esearch commands
+		#specifying the subset as an 
 		subprocess.call('esearch -db protein \
 		-query "$sub [ORGN] AND $pro [PROT]" |\
 		efetch -format fasta > data.txt', env=current_env, shell=True)
