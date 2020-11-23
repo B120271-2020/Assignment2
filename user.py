@@ -151,5 +151,68 @@ subprocess.call('plotcon -sformat fasta align.fa -graph svg', shell=True)
 subprocess.call('xdg-open plotcon.svg', shell=True)
 
 #the program can now continue after the user exits
-print("Conservation plot for variables here successfuly generated")
+print("Conservation plot for ", prot, " in ", tax, "successfuly generated")
 print("Scanning for motifs from the prosite database")
+
+
+
+#######
+## 3 ## 	scan for motifs from prosite database
+#######
+
+#align.fa contains top 250 aligned protein sequences
+#we'll have to process this so it writes out a separate file for each of the 250
+#and then use each one as an input 
+
+#we read the file
+seq = open("align.fa").read()
+#split it into individual strings of each fasta
+seq = re.split(r'\n>', seq[1:])
+#then format it so all items have the > at the start
+seq = ['>{0}'.format (i) for i in seq]
+
+#we pull out each string and write it into a new file
+
+if not os.path.exists("proteins"):
+        os.mkdir("proteins")
+os.chdir("proteins")
+
+n=1
+
+for i in seq:
+	if n < 250:
+		n=str(n)
+		s = open (n, "w")
+		s.write(i)
+		s.close()
+		n=int(n)
+		n+=1
+
+print("File inputs for PROSITE generated")
+
+
+#now we process each file into patmatmotifs
+#we find all
+cmd = 'for file in *\n do\n patmatmotifs $file out\n cat out >> summary\n done'
+subprocess.call(cmd, shell=True)
+
+
+#now lets look for elements in the summary file
+summary = open("summary").read()
+
+sequences = len(seq)
+print("From the ", sequences, " sequences:")
+
+#sequences with motifs
+nmotifs = re.findall(r'Motif = .+', summary)
+lenmotifs=len(nmotifs)
+print("A motif has been identified: ", lenmotifs, "times")
+
+#different motifs by name
+dmotifs=set(nmotifs)
+print("The different motifs present in the sequences are: ", dmotifs)
+
+#number of sequences for each motif 
+for i in dmotifs:
+	n=nmotifs.count(i)
+	print("There are ", n, "occurences of ", i, "in all sequences")
