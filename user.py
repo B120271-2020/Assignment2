@@ -1,7 +1,7 @@
 #!/bin/python3
 
 #######
-## a ## getting data from user defined query
+## 1 ## getting data from user defined query
 #######
 
 
@@ -13,10 +13,13 @@ print ("\nWelcome to B120271\'s  tool for protein conservation and motif ID anal
 print("Program will write outputs to the \'database\' folder in the current directory.")
 
 #we make a folder for our assignment and navigate there
+#the folder is made writable by the user and guests
+
 if not os.path.exists("database"):
         os.mkdir("database")
+subprocess.call('chmod u+rwx database', shell=True)
+subprocess.call('chmod g+rwx database', shell=True)
 os.chdir("database")
-
 
 #we establish a big loop for user inputs
 
@@ -55,7 +58,7 @@ while i == 1:
 		#we output the fasta information using the esearch commands
 		#specifying the subset as an 
 		subprocess.call('esearch -db protein \
-		-query "$sub [ORGN] AND $pro [PROT]" |\
+		-query "$sub [organism] AND $pro [protein]" |\
 		efetch -format fasta > data.txt', env=current_env, shell=True)
 
 
@@ -110,14 +113,39 @@ print("Proceeding with conservation analysis...")
 subprocess.call('makeblastdb -in data.txt -dbtype prot -out reference', shell=True)
 print("Reference database successfully created")
 
+#we align our data
+#align with our file
+subprocess.call('clustalo -i data.txt --outfmt=fasta -v -o clust.fa --output-order=tree-order --iter=1', shell=True)
+print("Data successfully aligned")
+
+#we keep the top 250 sequences
+#as aligned fastas all have the same length, 
+#the total number of lines divided by the total number of sequences gives the number of lines per sequence
+#so 250 multiplied by (lines/sequences) is the 250 top sequences assigned by clustalo
+align = open("clust.fa").read()
+lines = align.count('\n')
+sequences = align.count('>')
+keep=int(250*(lines/sequences))
+
+
+aligns=align.splitlines()
+aligns= str(aligns[0:keep])
+aligns=aligns.replace("', '", "\n")
+aligns=aligns[2:-3]
+aligns = aligns + "\n"
+
+#write out 250 top to file
+f = open("trim.fa", "w")
+f.write(aligns)
+f.close()
+
 
 #use cons to get a query sequence
-cmd = 'cons data.txt'
-print("To verify you are not a robot, please input the following within the square brackets [yes]")
+cmd = 'cons trim.fa'
+print("To verify you are not a robot, please input the following within the square brackets after the next prompt [yes]")
 
 #we wait to make sure user has read the prompt
 #this process of file naming is a bit of a cop-out
-#but flexible enough that any yes input will provide correct output
 time.sleep(5)
 
 #the user input of yes specifies the file name used in the next command
@@ -129,22 +157,12 @@ subprocess.call('blastp -db reference -query yes -outfmt "6 sseqid sseq" > blast
 #we format the blast into a "semi-fasta"
 subprocess.call("sed 's/^/>/' blastoutput.out > temp", shell = True)
 
-#trim for the top 250 represented sequences
-subprocess.call("head -n 250 temp > temp2", shell = True)
-
-#trim for the top 250 represented sequences
-subprocess.call("head -n 250 temp > temp2", shell = True)
-
 #replacing each tab with a newline to get a fasta format
-text = open("temp2").read()
-text2 = text.replace('\t', '\n')
-f = open("trim", "w")
-f.write(text2)
+text = open("temp").read()
+text = text.replace('\t', '\n')
+f = open("align.fa", "w")
+f.write(text)
 f.close()
-
-#align with our file
-subprocess.call('clustalo -i trim --outfmt=fasta -v -o align.fa --output-order=tree-order --iter=2', shell=True)
-print("Data successfully aligned")
 
 #plotcon is used to process a conservation plot from clustalo output
 print("Proceeding with convservation plot")
@@ -152,6 +170,7 @@ print("When prompted, input size of windows. Larger windows result in smoother p
 
 #we plot using our aligned data
 subprocess.call('plotcon -sformat fasta align.fa -graph svg', shell=True)
+print("Opening plot...")
 subprocess.call('xdg-open plotcon.svg', shell=True)
 
 #the program can now continue after the user exits
@@ -198,7 +217,7 @@ print("File inputs for PROSITE generated")
 time.sleep(5)
 
 #now we process each file into patmatmotifs
-cmd = 'for file in *\n do\n patmatmotifs $file out\n cat out >> summary\n done'
+cmd = 'for file in *\n do\n patmatmotifs $file out\n cat out >> all\n done'
 subprocess.call(cmd, shell=True)
 
 #now lets look for elements in the summary file
@@ -207,8 +226,9 @@ summary = open("summary").read()
 sequences = len(seq)
 print("From the ", sequences, " sequences:")
 
+
 #sequences with motifs
-nmotifs = re.findall(r'Motif = .+', summary)
+nmotifs = re.findall(r'Motif = .+', all)
 lenmotifs=len(nmotifs)
 print("A motif has been identified: ", lenmotifs, "times")
 
@@ -220,3 +240,16 @@ print("The different motifs present in the sequences are: ", dmotifs)
 for i in dmotifs:
 	n=nmotifs.count(i)
 	print("There are ", n, "occurences of ", i, "in all sequences")
+
+#we write these to a file so the user can look at them later if interested 
+
+original_stdout = sys.stdout
+with open ('summary.txt', '2') as f:
+	sys.stdout = f
+	print("From the ", sequences, " sequences:")
+	print("A motif has been identified: ", lenmotifs, "times")
+	print("The different motifs present in the sequences are: ", dmotifs)
+	print("There are ", n, "occurences of ", i, "in all sequences")
+sys.stdout = original_stdout
+
+
