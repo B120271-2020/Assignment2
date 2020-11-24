@@ -264,20 +264,20 @@ for i in dmotifs:
 	print("There are ", n, "occurences of ", i, "in all sequences")
 
 #option to remove temporary files
-os.chdir(..)
+os.chdir('..')
 
 nbytes = (sum(d.stat().st_size for d in os.scandir('.') if d.is_file()))*(10**-6)
 mb = (str(nbytes))[0:4]
-print("We have used ", mb, " megabytes to perform this task.\nWould you like to clear a$
+print("We have used ", mb, " megabytes to perform this task.\nWould you like to clear all temporary files")
 
 i = 1
 while i ==1:
         clear = input("Clear temporary files [1]\n Keep all files [2]\n")
         if clear == "1":
-                files = [i for i in os.listdir() if i not in ('plotcon.svg', 'summary.t$
+                files = [i for i in os.listdir() if i not in ('plotcon.svg', 'summary.txt', 'trim.fa')]
                 subprocess.call(['rm','-r'] + files)
                 print ("Temporary files purged.")
-                nbytes = (sum(d.stat().st_size for d in os.scandir('.') if d.is_file())$
+                nbytes = (sum(d.stat().st_size for d in os.scandir('.') if d.is_file()))*(10**-6)
                 print ("We are now using ", nbytes, "of storage")
                 #exit loop
                 i = "2"
