@@ -6,11 +6,15 @@
 
 
 #first lets import the modules needed
-import os, subprocess, sys, re, time
+import os, subprocess, sys, re, time, shutil
 
 #Introductory lines
-print ("\nWelcome to B120271\'s  tool for protein conservation and motif ID analysis\n")
+print ("\nWelcome to B120271\'s tool for protein conservation and motif ID analysis\n") 
+print("Please navigate to the directory you wish to output data to prior to proceeding")
 print("Program will write outputs to the \'database\' folder in the current directory.")
+
+#we let the user have time to read the above before proceeding
+time.sleep(3)
 
 #we make a folder for our assignment and navigate there
 #the folder is made writable by the user and guests
@@ -65,10 +69,6 @@ while i == 1:
 		print("Data acquired")
 
 
-		#if this is not acceptable we ask user if they want to restart
-		print("\nWARNING! Program will only analyse the top 250 most similar sequences")
-	
-
 		#reading through the data to let the user know what they have downloaded
 		data = open("data.txt").read()
 		print("\nWithin your defined dataset,")
@@ -83,15 +83,28 @@ while i == 1:
 		nspec = set(re.findall('\[(.*?)\]', data))
 		print("The total number of unique species represented:\n", len(nspec))
 
-		#option to redefine query
-		next = input("\nWould you like to redefine your query? [yes/no]\n")
+		#if there are more than 250 total sequences, print error message
+		if nseq > 250:
+			print("WARNING! Total sequences acquired from your query exceeds 250")
+			print("Analysis will only be performed on top 250 conserved proteins")
 
-		if next == "yes":
-			#restart the loop 
-			i = 1
-		else:
-			#exit the loop
-			i = 2
+		#option to redefine query
+		b = 5
+		while b == 5:
+			next = input("\nWould you like to redefine your query?\nRedefine query [1]\nContinue [2]\n")
+
+			if next == "1":
+				#restart the loop 
+				i = 1
+				b = 4
+			elif next == "2":
+				#exit the loop
+				i = 2
+				b = 4
+			else:
+			#user being silly
+				print("Please input either [1] or [2]")
+				b = 5
 	
 	elif proceed == "no":
 		print("Redefining query")
@@ -117,27 +130,35 @@ print("Reference database successfully created")
 subprocess.call('clustalo -i data.txt --outfmt=fasta -v -o clust.fa --output-order=tree-order --iter=1', shell=True)
 print("Data successfully aligned")
 
+
+
 #we keep the top 250 sequences
 #as aligned fastas all have the same length, 
 #the total number of lines divided by the total number of sequences gives the number of lines per sequence
-#so 250 multiplied by (lines/sequences) is the 250 top sequences assigned by clustalo
-align = open("clust.fa").read()
-lines = align.count('\n')
-sequences = align.count('>')
-keep=int(250*(lines/sequences))
+#so 250 multiplied by (lines/sequences) is equivalent to 250 sequences
+#as clustalo was specified to output in tree order, we keep the top 250
+#but we only do this if there are more than 250 sequences anyway
 
+if nseq > 250:
+	align = open("clust.fa").read()
+	lines = align.count('\n')
+	sequences = align.count('>')
+	keep=int(250*(lines/sequences))
 
-aligns=align.splitlines()
-aligns= str(aligns[0:keep])
-aligns=aligns.replace("', '", "\n")
-aligns=aligns[2:-3]
-aligns = aligns + "\n"
+	#this step formats the top 250 sequences properly 
+	aligns=align.splitlines()
+	aligns= str(aligns[0:keep])
+	aligns=aligns.replace("', '", "\n")
+	aligns=aligns[2:-3]
+	aligns = aligns + "\n"
 
-#write out 250 top to file
-f = open("trim.fa", "w")
-f.write(aligns)
-f.close()
-
+	#write out 250 top to file
+	f = open("trim.fa", "w")
+	f.write(aligns)
+	f.close()
+else:
+	#keep consistency of file names
+	subprocess.call ('mv clust.fa trim.fa', shell=True)
 
 #use cons to get a query sequence
 cmd = 'cons trim.fa'
@@ -150,7 +171,7 @@ time.sleep(5)
 #the user input of yes specifies the file name used in the next command
 subprocess.call(cmd, shell=True)
 
-#we blast our query prompt
+#we blast our query prompt with the yes file
 subprocess.call('blastp -db reference -query yes -outfmt "6 sseqid sseq" > blastoutput.out', shell=True)
 
 #we format the blast into a "semi-fasta"
