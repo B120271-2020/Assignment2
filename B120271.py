@@ -118,16 +118,17 @@ print("Proceeding with conservation analysis...")
 
 
 #######
-## 2 ##
+## 2 ##  data processing and conservation plot generation
 #######
 
 #we make a database from the users query
 subprocess.call('makeblastdb -in data.txt -dbtype prot -out reference', shell=True)
 print("Reference database successfully created")
 
+
 #we align our data
 #align with our file
-subprocess.call('clustalo -i data.txt --outfmt=fasta -v -o clust.fa --output-order=tree-order --iter=1', shell=True)
+subprocess.call('clustalo -i data.txt -o clust.fa --outfmt=fa -v', shell=True)
 print("Data successfully aligned")
 
 
@@ -158,7 +159,8 @@ if nseq > 250:
 	f.close()
 else:
 	#keep consistency of file names
-	subprocess.call ('mv clust.fa trim.fa', shell=True)
+	subprocess.call ('cp clust.fa trim.fa', shell=True)
+
 
 #use cons to get a query sequence
 cmd = 'cons trim.fa'
@@ -184,7 +186,7 @@ f = open("align.fa", "w")
 f.write(text)
 f.close()
 
-#plotcon is used to process a conservation plot from clustalo output
+#plotcon is used to process a conservation plot from blast output
 print("Proceeding with convservation plot")
 print("When prompted, input size of windows. Larger windows result in smoother plots, at loss of sensitivity")
 
