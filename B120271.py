@@ -272,3 +272,5 @@ print("A motif has been identified: ", lenmotifs, "times")
 print("The different motifs present in the sequences are: ", dmotifs)
 print("There are ", n, "occurences of ", i, "in all sequences")
 sys.stdout.close()
+
+print("Analysis terminated. Thank you for using B120271's program")
