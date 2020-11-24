@@ -217,11 +217,11 @@ print("File inputs for PROSITE generated")
 time.sleep(5)
 
 #now we process each file into patmatmotifs
-cmd = 'for file in *\n do\n patmatmotifs $file out\n cat out >> all\n done'
+cmd = 'for file in *\n do\n patmatmotifs $file out\n cat out >> all.txt\n done'
 subprocess.call(cmd, shell=True)
 
 #now lets look for elements in the summary file
-summary = open("summary").read()
+all = open("all.txt").read()
 
 sequences = len(seq)
 print("From the ", sequences, " sequences:")
@@ -242,14 +242,11 @@ for i in dmotifs:
 	print("There are ", n, "occurences of ", i, "in all sequences")
 
 #we write these to a file so the user can look at them later if interested 
+os.chdir('..')
 
-original_stdout = sys.stdout
-with open ('summary.txt', '2') as f:
-	sys.stdout = f
-	print("From the ", sequences, " sequences:")
-	print("A motif has been identified: ", lenmotifs, "times")
-	print("The different motifs present in the sequences are: ", dmotifs)
-	print("There are ", n, "occurences of ", i, "in all sequences")
-sys.stdout = original_stdout
-
-
+sys.stdout = open("summary.txt", "w")
+print("From the ", sequences, " sequences:")
+print("A motif has been identified: ", lenmotifs, "times")
+print("The different motifs present in the sequences are: ", dmotifs)
+print("There are ", n, "occurences of ", i, "in all sequences")
+sys.stdout.close()
