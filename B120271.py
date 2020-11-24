@@ -263,8 +263,37 @@ for i in dmotifs:
 	n=nmotifs.count(i)
 	print("There are ", n, "occurences of ", i, "in all sequences")
 
-#we write these to a file so the user can look at them later if interested 
-os.chdir('..')
+#option to remove temporary files
+os.chdir(..)
+
+nbytes = (sum(d.stat().st_size for d in os.scandir('.') if d.is_file()))*(10**-6)
+mb = (str(nbytes))[0:4]
+print("We have used ", mb, " megabytes to perform this task.\nWould you like to clear a$
+
+i = 1
+while i ==1:
+        clear = input("Clear temporary files [1]\n Keep all files [2]\n")
+        if clear == "1":
+                files = [i for i in os.listdir() if i not in ('plotcon.svg', 'summary.t$
+                subprocess.call(['rm','-r'] + files)
+                print ("Temporary files purged.")
+                nbytes = (sum(d.stat().st_size for d in os.scandir('.') if d.is_file())$
+                print ("We are now using ", nbytes, "of storage")
+                #exit loop
+                i = "2"
+        elif clear == "2":
+                print("All files kept.")
+                #exit loop
+                i = 2
+        else:
+                print("Please input either [1] or [2]")
+                i = 1
+print("Analysis terminated. Thank you for using B120271's program")
+
+
+#we write these to a file so the user can look at them later if interested
+#this is at the end of the script as the sys.stdout.close() gives errors
+#when used before
 
 sys.stdout = open("summary.txt", "w")
 print("From the ", sequences, " sequences:")
@@ -272,31 +301,3 @@ print("A motif has been identified: ", lenmotifs, "times")
 print("The different motifs present in the sequences are: ", dmotifs)
 print("There are ", n, "occurences of ", i, "in all sequences")
 sys.stdout.close()
-
-
-#option to remove all temporary files
-#determine mb used for task
-
-nbytes = (sum(d.stat().st_size for d in os.scandir('.') if d.is_file()))*(10**-6)
-
-print("We have used ", nbytes, " megabytes to perform this task.\nWould you like to clear all temporary and intermediate files?")
-
-i = 1
-while i ==1:
-	clear = input("Clear temporary files [1]\n Keep all files [2]")
-	if clear == "1":
-		files = [i for i in os.listdir() if i not in ('plotcon.svg', 'summary.txt', 'trim.fa')]
-		subprocess.call(['rm','-r'] + files)
-		print ("Temporary files purged.")
-		nbytes = (sum(d.stat().st_size for d in os.scandir('.') if d.is_file()))*(10**-6)
-		print ("We are now using ", nbytes, "of storage")
-		#exit loop
-		i = "2" 
-	elif clear == "2":
-		print("All files kept.")
-		#exit loop		
-		i = 2
-	else:
-		print("Please input either [1] or [2]")
-		i = 1
-print("Analysis terminated. Thank you for using B120271's program")
