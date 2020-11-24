@@ -14,7 +14,6 @@ print("Program will write outputs to the \'database\' folder in the current dire
 
 #we make a folder for our assignment and navigate there
 #the folder is made writable by the user and guests
-
 if not os.path.exists("database"):
         os.mkdir("database")
 subprocess.call('chmod u+rwx database', shell=True)
@@ -58,7 +57,7 @@ while i == 1:
 		#we output the fasta information using the esearch commands
 		#specifying the subset as an 
 		subprocess.call('esearch -db protein \
-		-query "$sub [organism] AND $pro [protein]" |\
+		-query "$sub [ORGN] AND $pro [PROT]" |\
 		efetch -format fasta > data.txt', env=current_env, shell=True)
 
 
