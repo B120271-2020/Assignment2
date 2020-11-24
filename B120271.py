@@ -43,7 +43,7 @@ while i == 1:
 	"in the\n",
 	tax, "taxonomic subset\n")
 
-	proceed = input("Do you wish to continue?\nContinue [1]\nRedefine Query[2]\nExit[...]\n")
+	proceed = input("Do you wish to continue?\nContinue [1]\nRedefine Query [2]\nExit [...]\n")
 
 	if proceed == "1":
 		print ("Please be patient, fetching data...")
@@ -273,4 +273,30 @@ print("The different motifs present in the sequences are: ", dmotifs)
 print("There are ", n, "occurences of ", i, "in all sequences")
 sys.stdout.close()
 
+
+#option to remove all temporary files
+#determine mb used for task
+
+nbytes = (sum(d.stat().st_size for d in os.scandir('.') if d.is_file()))*(10**-6)
+
+print("We have used ", nbytes, " megabytes to perform this task.\nWould you like to clear all temporary and intermediate files?")
+
+i = 1
+while i ==1:
+	clear = input("Clear temporary files [1]\n Keep all files [2]")
+	if clear == "1":
+		files = [i for i in os.listdir() if i not in ('plotcon.svg', 'summary.txt', 'trim.fa')]
+		subprocess.call(['rm','-r'] + files)
+		print ("Temporary files purged.")
+		nbytes = (sum(d.stat().st_size for d in os.scandir('.') if d.is_file()))*(10**-6)
+		print ("We are now using ", nbytes, "of storage")
+		#exit loop
+		i = "2" 
+	elif clear == "2":
+		print("All files kept.")
+		#exit loop		
+		i = 2
+	else:
+		print("Please input either [1] or [2]")
+		i = 1
 print("Analysis terminated. Thank you for using B120271's program")
