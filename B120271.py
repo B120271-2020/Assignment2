@@ -43,9 +43,9 @@ while i == 1:
 	"in the\n",
 	tax, "taxonomic subset\n")
 
-	proceed = input("Do you wish to continue? [yes/no/exit] \n")
+	proceed = input("Do you wish to continue?\nContinue [1]\nRedefine Query[2]\nExit[...]\n")
 
-	if proceed == "yes":
+	if proceed == "1":
 		print ("Please be patient, fetching data...")
 
 		#lets go fetch our sequences now
@@ -91,22 +91,22 @@ while i == 1:
 		#option to redefine query
 		b = 5
 		while b == 5:
-			next = input("\nWould you like to redefine your query?\nRedefine query [1]\nContinue [2]\n")
+			next = input("\nWould you like to redefine your query?\nContinue [1]\nRedefine Query [2]\n")
 
 			if next == "1":
-				#restart the loop 
-				i = 1
+				#exit loop and continue program
+				i = 2
 				b = 4
 			elif next == "2":
-				#exit the loop
-				i = 2
+				#restart the loop
+				i = 1
 				b = 4
 			else:
 			#user being silly
 				print("Please input either [1] or [2]")
 				b = 5
 	
-	elif proceed == "no":
+	elif proceed == "2":
 		print("Redefining query")
 		i = 1
 	else:
@@ -162,7 +162,7 @@ else:
 
 #use cons to get a query sequence
 cmd = 'cons trim.fa'
-print("To verify you are not a robot, please input the following within the square brackets after the next prompt [yes]")
+print("To verify you are not a robot, \nplease input the following within the square brackets after the next prompt [yes]")
 
 #we wait to make sure user has read the prompt
 #this process of file naming is a bit of a cop-out
