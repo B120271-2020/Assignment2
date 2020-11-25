@@ -269,8 +269,8 @@ for i in dmotifs:
 ## 4 ##  Wildcard options
 #######
 
-#generate distance matrix with distmat
-
+#generate distance matrix with distmat from the EMBOSS
+#using loops as failsafes for the inputs
 
 os.chdir('..')
 i = 1
@@ -291,7 +291,10 @@ while i == 1:
 
 
 #option to remove temporary files
-
+#nice commands to see how much storage is being used
+#while it may be small so is a cell
+#and cells make up your body
+#so always good to detox
 
 nbytes = (sum(d.stat().st_size for d in os.scandir('.') if d.is_file()))*(10**-6)
 mb = (str(nbytes))[0:4]
@@ -314,6 +317,7 @@ while i ==1:
 		#exit loop
 		i = 2
 	else:
+		#failsafe
 		print("Please input either [1] or [2]\n")
 		i = 1
 print("\nAnalysis terminated. Thank you for using B120271's program.")
@@ -321,7 +325,8 @@ print("\nAnalysis terminated. Thank you for using B120271's program.")
 
 #we write these to a file so the user can look at them later if interested
 #this is at the end of the script as the sys.stdout.close() gives errors
-#when used before
+#when used in the script beforehand
+#luckily all the variables are saved
 
 sys.stdout = open("summary.txt", "w")
 print("From the ", sequences, " sequences:")
