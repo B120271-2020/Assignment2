@@ -263,8 +263,35 @@ for i in dmotifs:
 	n=nmotifs.count(i)
 	print("There are ", n, "occurences of ", i, "in all sequences")
 
-#option to remove temporary files
+
+
+#######
+## 4 ##  Wildcard options
+#######
+
+#generate distance matrix with distmat
+
+
 os.chdir('..')
+i = 1
+
+while i == 1:
+        wildcard = input("Generate additional distance matrix?\nYes [1]\nNo [2]\n")
+        if wildcard == "1":
+                print("Generating distance matrix")
+                subprocess.call('distmat -sequence trim.fa -outfile distmat', shell =True)
+                print("Distance matrix saved as distmat.")
+                i = 3
+        elif wildcard == "2":
+                print ("Skipping step...")
+                i = 3
+        else:
+                print("Please input one of the options.")
+                i = 1
+
+
+#option to remove temporary files
+
 
 nbytes = (sum(d.stat().st_size for d in os.scandir('.') if d.is_file()))*(10**-6)
 mb = (str(nbytes))[0:4]
@@ -274,7 +301,7 @@ i = 1
 while i ==1:
 	clear = input("Clear temporary files [1]\n Keep all files [2]\n")
 	if clear == "1":
-		files = [i for i in os.listdir() if i not in ('plotcon.svg', 'summary.txt', 'trim.fa')]
+		files = [i for i in os.listdir() if i not in ('plotcon.svg', 'summary.txt', 'trim.fa', 'distmat')]
 		subprocess.call(['rm','-r'] + files)
 		print ("Temporary files purged.\n")
 		nbytes = (sum(d.stat().st_size for d in os.scandir('.') if d.is_file()))*(10**-6)
